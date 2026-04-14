@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Admin Starter Kit | Responsive Dashboard</title>
+    <!-- Tailwind CSS v3 + Font Awesome Icons + Inter Font -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN untuk chart sederhana -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* custom scroll & transition */
+        * {
+            transition: all 0.2s ease;
+        }
+        /* bottom bar active indicator */
+        .bottom-nav-item.active {
+            color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .bottom-nav-item {
+            transition: all 0.2s;
+        }
+        /* sidebar active menu style */
+        .sidebar-item.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 6px rgba(59,130,246,0.3);
+        }
+        .sidebar-item.active i {
+            color: white;
+        }
+        .sidebar-item:hover:not(.active) {
+            background-color: #f1f5f9;
+        }
+        /* card hover effect */
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -12px rgba(0,0,0,0.15);
+        }
+        /* responsive container */
+        @media (max-width: 768px) {
+            .main-padding {
+                padding-bottom: 5rem; /* space untuk bottom bar */
+            }
+        }
+        /* hide scrollbar for clean look (opsional) */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+    <!-- WRAPPER FLEX UNTUK SIDEBAR + MAIN (DESKTOP) -->
+    <div class="flex min-h-screen relative">
+        
+        <!-- ======================= SIDEBAR (DESKTOP & TABLET LANDSCAPE) ======================= -->
+        <!-- Sidebar akan disembunyikan di mobile (max-width: 768px) dengan class hidden md:flex -->
+        <aside class="hidden md:flex md:w-64 lg:w-72 bg-white shadow-xl flex-col fixed inset-y-0 left-0 z-20 border-r border-gray-200">
+            <!-- Logo area -->
+            <div class="flex items-center justify-center h-20 border-b border-gray-100 px-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-cube text-blue-600 text-2xl"></i>
+                    <span class="font-bold text-xl text-gray-800">Starter<span class="text-blue-600">Kit</span></span>
+                </div>
+            </div>
+            
+            <!-- Menu Sidebar -->
+            <nav class="flex-1 mt-6 px-3 space-y-1.5">
+                <a href="#" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 font-medium transition" data-menu="dashboard">
+                    <i class="fas fa-tachometer-alt w-5 text-gray-500"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 font-medium transition" data-menu="analytics">
+                    <i class="fas fa-chart-line w-5 text-gray-500"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 font-medium transition" data-menu="orders">
+                    <i class="fas fa-shopping-cart w-5 text-gray-500"></i>
+                    <span>Orders</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 font-medium transition" data-menu="products">
+                    <i class="fas fa-boxes w-5 text-gray-500"></i>
+                    <span>Products</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 font-medium transition" data-menu="customers">
+                    <i class="fas fa-users w-5 text-gray-500"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 font-medium transition" data-menu="settings">
+                    <i class="fas fa-cog w-5 text-gray-500"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <!-- user profile di sidebar (desktop) -->
+            <div class="border-t border-gray-100 p-4 mt-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">AD</div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800">Admin User</p>
+                        <p class="text-xs text-gray-500">admin@starterkit.com</p>
+                    </div>
+                    <i class="fas fa-sign-out-alt text-gray-400 hover:text-red-500 cursor-pointer"></i>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- ======================= MAIN CONTENT AREA ======================= -->
+        <main class="flex-1 md:ml-64 lg:ml-72 min-h-screen pb-20 md:pb-6 main-padding">
+            
+            <!-- Header Bar (atas) -->
+            <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-10 shadow-sm px-5 py-3 flex justify-between items-center border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <!-- Tampilkan menu button untuk mobile (toggle sidebar? tidak perlu karena bottom bar, tapi tetap ada icon agar familiar) -->
+                    <div class="md:hidden text-gray-600 text-xl">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-800" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-bell text-gray-500 text-lg hover:text-blue-500 cursor-pointer"></i>
+                    <div class="hidden sm:block relative">
+                        <input type="text" placeholder="Search..." class="pl-8 pr-3 py-1.5 rounded-full bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 w-48">
+                        <i class="fas fa-search absolute left-2.5 top-2 text-gray-400 text-sm"></i>
+                    </div>
+                    <div class="md:hidden flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">AD</div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- ======================= CONTENT DINAMIS (dashboard) ======================= -->
+            <div class="p-4 md:p-6" id="mainContent">
+                <!-- Stat Cards (Row) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                    <div class="stat-card bg-white rounded-2xl shadow-sm p-5 flex justify-between items-center transition">
+                        <div>
+                            <p class="text-gray-500 text-sm">Total Revenue</p>
+                            <p class="text-2xl font-bold text-gray-800">$45,231.89</p>
+                            <span class="text-green-500 text-xs flex items-center gap-1 mt-1"><i class="fas fa-arrow-up"></i> +12.5%</span>
+                        </div>
+                        <i class="fas fa-dollar-sign text-3xl text-blue-100 text-blue-500/40"></i>
+                    </div>
+                    <div class="stat-card bg-white rounded-2xl shadow-sm p-5 flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">New Users</p>
+                            <p class="text-2xl font-bold text-gray-800">+2,350</p>
+                            <span class="text-green-500 text-xs">+18.2%</span>
+                        </div>
+                        <i class="fas fa-users text-3xl text-indigo-100 text-indigo-400/40"></i>
+                    </div>
+                    <div class="stat-card bg-white rounded-2xl shadow-sm p-5 flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">Orders</p>
+                            <p class="text-2xl font-bold text-gray-800">1,432</p>
+                            <span class="text-red-500 text-xs"><i class="fas fa-arrow-down"></i> -3%</span>
+                        </div>
+                        <i class="fas fa-shopping-bag text-3xl text-amber-100 text-amber-500/40"></i>
+                    </div>
+                    <div class="stat-card bg-white rounded-2xl shadow-sm p-5 flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">Conversion Rate</p>
+                            <p class="text-2xl font-bold text-gray-800">23.5%</p>
+                            <span class="text-green-500 text-xs">+4.3%</span>
+                        </div>
+                        <i class="fas fa-chart-simple text-3xl text-emerald-100 text-emerald-500/40"></i>
+                    </div>
+                </div>
+                
+                <!-- Chart dan tabel ringkasan (grid 2 kolom di lg) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- CHART area -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-gray-700"><i class="fas fa-chart-line text-blue-500 mr-2"></i>Revenue Overview</h3>
+                            <select class="text-xs border rounded-lg px-2 py-1 bg-gray-50">
+                                <option>Last 7 days</option>
+                                <option>This month</option>
+                            </select>
+                        </div>
+                        <canvas id="revenueChart" height="200" class="w-full"></canvas>
+                    </div>
+                    
+                    <!-- Recent Orders Preview -->
+                    <div class="bg-white rounded-2xl shadow-sm p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-gray-700"><i class="fas fa-clock text-blue-500 mr-2"></i>Recent Orders</h3>
+                            <a href="#" class="text-blue-600 text-sm hover:underline">View all</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="border-b">
+                                    <tr class="text-gray-500">
+                                        <th class="text-left py-2">Product</th>
+                                        <th class="text-left">Date</th>
+                                        <th class="text-right">Amount</th>
+                                        <th class="text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b">
+                                        <td class="py-2">Wireless Headphones</td>
+                                        <td>May 12, 2025</td>
+                                        <td class="text-right">$89.99</td>
+                                        <td class="text-right"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">Completed</span></td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="py-2">Smart Watch Pro</td>
+                                        <td>May 11, 2025</td>
+                                        <td class="text-right">$199.00</td>
+                                        <td class="text-right"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-xs">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2">Ultrabook Laptop</td>
+                                        <td>May 10, 2025</td>
+                                        <td class="text-right">$1299.99</td>
+                                        <td class="text-right"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">Shipping</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional menu info (untuk dummy konten analytics dll) -->
+                <div id="dynamicPanel" class="bg-white rounded-2xl shadow-sm p-6 hidden">
+                    <!-- panel konten untuk menu lain (diisi via js) -->
+                </div>
+                <div id="defaultDashboardNote" class="text-center text-gray-400 text-sm mt-4">
+                    ✨ Starter kit responsive — sidebar di laptop, bottom navigation di HP & tablet.
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- ======================= BOTTOM NAVIGATION BAR (MOBILE & TABLET) ======================= -->
+    <!-- Hanya muncul di layar < 768px (md:hidden) -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl z-30 rounded-t-2xl">
+        <div class="flex justify-around items-center py-2 px-3">
+            <!-- Menu item bottom bar -->
+            <div class="bottom-nav-item flex flex-col items-center py-1 px-3 rounded-xl transition-all active" data-mobile-menu="dashboard">
+                <i class="fas fa-tachometer-alt text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium">Dashboard</span>
+            </div>
+            <div class="bottom-nav-item flex flex-col items-center py-1 px-3 rounded-xl" data-mobile-menu="analytics">
+                <i class="fas fa-chart-line text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium">Analytics</span>
+            </div>
+            <div class="bottom-nav-item flex flex-col items-center py-1 px-3 rounded-xl" data-mobile-menu="orders">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium">Orders</span>
+            </div>
+            <div class="bottom-nav-item flex flex-col items-center py-1 px-3 rounded-xl" data-mobile-menu="products">
+                <i class="fas fa-boxes text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium">Products</span>
+            </div>
+            <div class="bottom-nav-item flex flex-col items-center py-1 px-3 rounded-xl" data-mobile-menu="customers">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium">Customers</span>
+            </div>
+            <div class="bottom-nav-item flex flex-col items-center py-1 px-3 rounded-xl" data-mobile-menu="settings">
+                <i class="fas fa-cog text-xl"></i>
+                <span class="text-[11px] mt-1 font-medium">Settings</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ---------- Inisialisasi Chart.js ----------
+        let revenueChart = null;
+        function initChart() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            if (revenueChart) revenueChart.destroy();
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Revenue (USD)',
+                        data: [3200, 4100, 3800, 5200, 6100, 4900, 7100],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.05)',
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#eef2f6' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+        
+        // Fungsi untuk mengupdate konten berdasarkan menu yang dipilih (baik dari sidebar desktop maupun bottom bar)
+        function loadMenu(menuId) {
+            // Update page title
+            const titles = {
+                dashboard: 'Dashboard',
+                analytics: 'Analytics Overview',
+                orders: 'Orders Management',
+                products: 'Product Catalog',
+                customers: 'Customer List',
+                settings: 'System Settings'
+            };
+            document.getElementById('pageTitle').innerText = titles[menuId] || 'Dashboard';
+            
+            const mainDynamicDiv = document.getElementById('dynamicPanel');
+            const defaultNote = document.getElementById('defaultDashboardNote');
+            const statCardsContainer = document.querySelector('.grid.grid-cols-1.sm:grid-cols-2.lg:grid-cols-4');
+            const chartContainer = document.querySelector('.grid.grid-cols-1.lg:grid-cols-2');
+            
+            // Reset tampilan dashboard: jika menu dashboard, tampilkan stat card + chart, sembunyikan dynamicPanel
+            if (menuId === 'dashboard') {
+                if (statCardsContainer) statCardsContainer.style.display = 'grid';
+                if (chartContainer) chartContainer.style.display = 'grid';
+                mainDynamicDiv.classList.add('hidden');
+                if (defaultNote) defaultNote.classList.remove('hidden');
+                // refresh chart karena kadang ukuran canvas
+                setTimeout(() => { if(revenueChart) revenueChart.resize(); }, 100);
+            } else {
+                // Sembunyikan elemen dashboard default
+                if (statCardsContainer) statCardsContainer.style.display = 'none';
+                if (chartContainer) chartContainer.style.display = 'none';
+                if (defaultNote) defaultNote.classList.add('hidden');
+                mainDynamicDiv.classList.remove('hidden');
+                
+                // Isi konten dinamis berdasarkan menu
+                let contentHtml = '';
+                if (menuId === 'analytics') {
+                    contentHtml = `
+                        <div class="space-y-4">
+                            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-chart-pie text-blue-500"></i> Advanced Analytics</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="bg-gray-50 p-4 rounded-xl"><p class="font-medium">Traffic sources</p><canvas id="pieChartSample" height="150"></canvas></div>
+                                <div class="bg-gray-50 p-4 rounded-xl"><p class="font-medium">Device breakdown</p><div class="h-32 flex items-center justify-center text-gray-500">Desktop 58% · Mobile 42%</div></div>
+                            </div>
+                            <p class="text-gray-600">Analytics insight: page views increased by 24% this week.</p>
+                        </div>
+                    `;
+                } else if (menuId === 'orders') {
+                    contentHtml = `<div><h2 class="text-xl font-bold mb-4"><i class="fas fa-truck"></i> Recent Orders</h2><div class="space-y-2"><div class="flex justify-between p-3 bg-gray-50 rounded-lg"><span>#ORD-001</span><span>$120</span><span class="text-green-600">Paid</span></div><div class="flex justify-between p-3 bg-gray-50 rounded-lg"><span>#ORD-002</span><span>$85</span><span class="text-yellow-600">Pending</span></div><div class="flex justify-between p-3 bg-gray-50 rounded-lg"><span>#ORD-003</span><span>$230</span><span class="text-blue-600">Processing</span></div></div></div>`;
+                } else if (menuId === 'products') {
+                    contentHtml = `<div><h2 class="text-xl font-bold mb-3"><i class="fas fa-box-open"></i> Product List</h2><ul class="space-y-2"><li class="flex justify-between p-3 bg-white shadow-sm rounded-lg"><span>Wireless Earbuds</span><span class="font-semibold">$49.99</span></li><li class="flex justify-between p-3 bg-white shadow-sm rounded-lg"><span>Gaming Mouse</span><span class="font-semibold">$29.99</span></li><li class="flex justify-between p-3 bg-white shadow-sm rounded-lg"><span>Mechanical Keyboard</span><span class="font-semibold">$89.99</span></li></ul></div>`;
+                } else if (menuId === 'customers') {
+                    contentHtml = `<div><h2 class="text-xl font-bold mb-3"><i class="fas fa-user-friends"></i> Top Customers</h2><div class="space-y-2"><div class="flex items-center gap-3 p-2"><div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">JD</div><div>John Doe - 12 orders</div></div><div class="flex items-center gap-3 p-2"><div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">SW</div><div>Sarah Williams - 8 orders</div></div></div></div>`;
+                } else if (menuId === 'settings') {
+                    contentHtml = `<div><h2 class="text-xl font-bold mb-3"><i class="fas fa-sliders-h"></i> Settings Panel</h2><div class="bg-gray-50 p-5 rounded-xl space-y-3"><label class="flex justify-between"><span>Dark mode</span><input type="checkbox" class="toggle"></label><label class="flex justify-between"><span>Email notifications</span><input type="checkbox" checked></label><button class="bg-blue-600 text-white px-4 py-2 rounded-lg mt-3">Save preferences</button></div></div>`;
+                }
+                mainDynamicDiv.innerHTML = contentHtml;
+                // jika analytics & ada pie chart sample, buat chart kecil
+                if (menuId === 'analytics') {
+                    setTimeout(() => {
+                        const pieCanvas = document.getElementById('pieChartSample');
+                        if (pieCanvas) {
+                            new Chart(pieCanvas, {
+                                type: 'doughnut',
+                                data: { labels: ['Direct', 'Social', 'Referral'], datasets: [{ data: [45, 30, 25], backgroundColor: ['#3b82f6', '#f97316', '#10b981'] }] },
+                                options: { responsive: true, maintainAspectRatio: true }
+                            });
+                        }
+                    }, 50);
+                }
+            }
+            
+            // Update class active pada SIDEBAR (desktop)
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                const menuAttr = item.getAttribute('data-menu');
+                if (menuAttr === menuId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Update class active pada BOTTOM BAR (mobile)
+            document.querySelectorAll('.bottom-nav-item').forEach(bottomItem => {
+                const mobileMenu = bottomItem.getAttribute('data-mobile-menu');
+                if (mobileMenu === menuId) {
+                    bottomItem.classList.add('active');
+                    // juga ubah warna icon & teks
+                    bottomItem.classList.add('text-blue-600', 'bg-blue-50');
+                } else {
+                    bottomItem.classList.remove('active', 'text-blue-600', 'bg-blue-50');
+                    bottomItem.classList.remove('text-blue-600', 'bg-blue-50');
+                }
+            });
+        }
+        
+        // Event listener untuk sidebar (desktop)
+        document.querySelectorAll('.sidebar-item').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const menu = link.getAttribute('data-menu');
+                loadMenu(menu);
+            });
+        });
+        
+        // Event listener untuk bottom navigation (mobile & tablet)
+        document.querySelectorAll('.bottom-nav-item').forEach(bottomLink => {
+            bottomLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                const menu = bottomLink.getAttribute('data-mobile-menu');
+                loadMenu(menu);
+                // scroll ke atas setelah klik menu di mobile
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+        
+        // Inisialisasi chart saat load
+        window.addEventListener('load', () => {
+            initChart();
+            // set dashboard aktif (default)
+            loadMenu('dashboard');
+        });
+        
+        // resize chart ketika window resize untuk responsiveness
+        window.addEventListener('resize', () => {
+            if (revenueChart) revenueChart.resize();
+        });
+    </script>
+</body>
+</html>

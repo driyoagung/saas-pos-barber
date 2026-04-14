@@ -1,7 +1,6 @@
 <?php
 
+use App\Livewire\AdminDashboard;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', AdminDashboard::class)->name('dashboard');
