@@ -2,7 +2,7 @@
 <aside class="hidden md:flex h-full w-64 flex-col fixed left-0 top-0 bg-slate-50 dark:bg-slate-900 z-50 font-inter text-sm antialiased transition-all duration-300">
     <div class="flex flex-col gap-4 p-6 h-full">
         <div class="flex items-center gap-3 mb-8">
-            <div class="w-10 h-10 bg-primary-gradient rounded-lg flex items-center justify-center text-white">
+            <div class="w-10 h-10 bg-primary-gradient rounded-full shrink-0 flex items-center justify-center text-white shadow-md">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">architecture</span>
             </div>
             <div>
@@ -10,16 +10,16 @@
                 <p class="text-[10px] text-slate-500 font-medium uppercase tracking-widest">Admin Dashboard</p>
             </div>
         </div>
-        <nav class="flex-1 space-y-2">
-            <a class="flex items-center gap-3 px-4 py-3 text-blue-700 dark:text-blue-400 font-semibold border-r-4 border-blue-600 transition-colors duration-200 bg-slate-100 dark:bg-slate-800/50 active:scale-95 transition-transform" href="#">
+        <nav class="flex-1 space-y-2 px-2">
+            <a class="flex items-center gap-3 px-4 py-3 text-white font-semibold transition-all duration-200 bg-primary-gradient rounded-xl shadow-lg shadow-primary/30 active:scale-95" href="#">
                 <span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
                 <span>General</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-transform" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-95" href="#">
                 <span class="material-symbols-outlined" data-icon="groups">groups</span>
                 <span>Management</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-transform" href="#">
+            <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-95" href="#">
                 <span class="material-symbols-outlined" data-icon="settings">settings</span>
                 <span>Settings</span>
             </a>

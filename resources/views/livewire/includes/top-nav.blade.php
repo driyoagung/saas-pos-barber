@@ -4,7 +4,7 @@
         
         <!-- Mobile Left Branding -->
         <div class="flex items-center gap-3 md:hidden">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md">
+            <div class="w-8 h-8 rounded-full shrink-0 bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md">
                 <span class="material-symbols-outlined text-white text-lg">precision_manufacturing</span>
             </div>
             <h1 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">Executive Precision</h1>
