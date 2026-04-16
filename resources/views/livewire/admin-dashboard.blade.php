@@ -34,7 +34,7 @@
                 <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 md:px-2 md:py-1 rounded-full">+12.5%</span>
             </div>
             <p class="text-[0.75rem] md:text-label-md text-on-surface-variant font-semibold md:font-medium uppercase tracking-wider mb-1">Total Revenue</p>
-            <h3 class="text-xl md:text-2xl font-black text-on-surface">$124,592.00</h3>
+            <h3 class="text-xl md:text-2xl font-black text-on-surface">${{ number_format($todayRevenue, 2) }}</h3>
             <div class="mt-3 md:mt-4 h-8 md:w-full flex items-end gap-1">
                 <div class="flex-1 bg-primary/10 group-hover:bg-primary/20 transition-colors h-[40%] rounded-t-sm"></div>
                 <div class="flex-1 bg-primary/10 group-hover:bg-primary/20 transition-colors h-[60%] rounded-t-sm"></div>
@@ -54,8 +54,8 @@
                 </div>
                 <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 md:px-2 md:py-1 rounded-full">+5.2%</span>
             </div>
-            <p class="text-[0.75rem] md:text-label-md text-on-surface-variant font-semibold md:font-medium uppercase tracking-wider mb-1">Active Users</p>
-            <h3 class="text-xl md:text-2xl font-black text-on-surface">12,842</h3>
+            <p class="text-[0.75rem] md:text-label-md text-on-surface-variant font-semibold md:font-medium uppercase tracking-wider mb-1">Total Transactions</p>
+            <h3 class="text-xl md:text-2xl font-black text-on-surface">{{ number_format($totalTransactions) }}</h3>
             <div class="mt-3 md:mt-4 h-8 w-full flex items-end gap-1">
                 <div class="flex-1 bg-secondary/10 group-hover:bg-secondary/20 transition-colors h-[30%] rounded-t-sm"></div>
                 <div class="flex-1 bg-secondary/10 group-hover:bg-secondary/20 transition-colors h-[40%] rounded-t-sm"></div>
@@ -210,22 +210,33 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-surface-container">
+                        @forelse($recentTransactions as $tx)
                         <tr class="hover:bg-surface-container-low transition-colors group">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">JD</div>
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">{{ substr($tx->customer_name ?? 'W', 0, 2) }}</div>
                                     <div>
-                                        <p class="text-sm font-bold text-on-surface">Jordan Global Co.</p>
-                                        <p class="text-[10px] text-on-surface-variant">Premium Cut</p>
+                                        <p class="text-sm font-bold text-on-surface">{{ $tx->customer_name ?? 'Walk-in Customer' }}</p>
+                                        <p class="text-[10px] text-on-surface-variant">{{ $tx->invoice_number }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-on-surface-variant">Oct 12, 2023</td>
-                            <td class="px-6 py-4 text-sm font-black text-on-surface">$45.00</td>
+                            <td class="px-6 py-4 text-sm text-on-surface-variant">{{ $tx->created_at->format('M d, Y') }}</td>
+                            <td class="px-6 py-4 text-sm font-black text-on-surface">${{ number_format($tx->total_amount, 2) }}</td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
-                                    <span class="w-1 h-1 rounded-full bg-emerald-700"></span> Completed
-                                </span>
+                                @if($tx->status === 'completed')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                                        <span class="w-1 h-1 rounded-full bg-emerald-700"></span> Completed
+                                    </span>
+                                @elseif($tx->status === 'pending')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                        <span class="w-1 h-1 rounded-full bg-amber-700"></span> Pending
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">
+                                        <span class="w-1 h-1 rounded-full bg-rose-700"></span> Refunded
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <button class="p-2 hover:bg-slate-200 rounded-full transition-colors">
@@ -233,29 +244,9 @@
                                 </button>
                             </td>
                         </tr>
-                        <tr class="bg-surface-container-low/30 hover:bg-surface-container-low transition-colors group">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">SM</div>
-                                    <div>
-                                        <p class="text-sm font-bold text-on-surface">Skyline Media</p>
-                                        <p class="text-[10px] text-on-surface-variant">Basic Cut</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-on-surface-variant">Oct 11, 2023</td>
-                            <td class="px-6 py-4 text-sm font-black text-on-surface">$25.50</td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
-                                    <span class="w-1 h-1 rounded-full bg-blue-700"></span> Processing
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <button class="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                                    <span class="material-symbols-outlined text-lg text-slate-400">more_vert</span>
-                                </button>
-                            </td>
-                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="p-6 text-center text-on-surface-variant text-sm border-b">No transactions found.</td></tr>
+                        @endforelse
                     </tbody>
                 </table>
                 <div class="p-4 border-t border-surface-container flex items-center justify-between">
@@ -273,37 +264,25 @@
 
             <!-- Mobile List View -->
             <div class="md:hidden space-y-3 p-4">
+                @forelse($recentTransactions as $tx)
                 <div class="bg-surface-container-lowest p-3 rounded-xl flex items-center justify-between border border-outline-variant/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary">shopping_cart</span>
+                        <div class="w-10 h-10 rounded-full {{ $loop->even ? 'bg-blue-50 text-blue-600' : 'bg-surface-container-low text-primary' }} flex items-center justify-center font-bold text-sm uppercase">
+                            {{ substr($tx->customer_name ?? 'W', 0, 2) }}
                         </div>
                         <div>
-                            <p class="text-sm font-bold text-on-surface">Walk-in Customer</p>
-                            <p class="text-[11px] text-on-surface-variant font-medium">Aug 24, 10:30 AM</p>
+                            <p class="text-sm font-bold text-on-surface">{{ $tx->customer_name ?? 'Walk-in Customer' }}</p>
+                            <p class="text-[11px] text-on-surface-variant font-medium">{{ $tx->created_at->format('M d, h:i A') }}</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-black text-primary">+$45.50</p>
-                        <p class="text-[10px] text-primary font-bold uppercase tracking-tighter">Completed</p>
+                        <p class="text-sm font-black {{ $tx->status === 'completed' ? 'text-primary' : 'text-on-surface-variant' }}">+${{ number_format($tx->total_amount, 2) }}</p>
+                        <p class="text-[10px] {{ $tx->status === 'completed' ? 'text-primary' : 'text-on-surface-variant' }} font-bold uppercase tracking-tighter">{{ $tx->status }}</p>
                     </div>
                 </div>
-                
-                <div class="bg-surface-container-lowest p-3 rounded-xl flex items-center justify-between border border-outline-variant/10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-on-surface">John Doe</p>
-                            <p class="text-[11px] text-on-surface-variant font-medium">Aug 23, 04:15 PM</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm font-black text-primary">+$120.00</p>
-                        <p class="text-[10px] text-primary font-bold uppercase tracking-tighter">Completed</p>
-                    </div>
-                </div>
+                @empty
+                 <div class="bg-surface-container-lowest p-3 rounded-xl text-center border border-outline-variant/10 text-on-surface-variant text-sm">No recent transactions.</div>
+                @endforelse
             </div>
 
         </div>

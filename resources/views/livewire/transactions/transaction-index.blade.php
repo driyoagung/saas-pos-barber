@@ -20,11 +20,11 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 shadow-sm">
             <p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider mb-1">Total Hari Ini</p>
-            <h4 class="text-lg font-black text-primary">$420.50</h4>
+            <h4 class="text-lg font-black text-primary">{{ number_format($trxHariIni) }}</h4>
         </div>
         <div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10 shadow-sm">
             <p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider mb-1">Transaksi Berhasil</p>
-            <h4 class="text-lg font-black text-emerald-600">12</h4>
+            <h4 class="text-lg font-black text-emerald-600">{{ number_format($trxBerhasil) }}</h4>
         </div>
     </div>
 
@@ -42,61 +42,29 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container">
-                    <!-- Tx 1 -->
+                    @forelse($transactions as $trx)
                     <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="px-6 py-4 text-sm font-semibold text-primary">#TRX-0042</td>
-                        <td class="px-6 py-4 text-sm text-on-surface-variant hidden md:table-cell">12 Okt 2023, 14:30</td>
+                        <td class="px-6 py-4 text-sm font-semibold text-primary">{{ $trx->invoice_number }}</td>
+                        <td class="px-6 py-4 text-sm text-on-surface-variant hidden md:table-cell">{{ $trx->created_at->format('d M Y, H:i') }}</td>
                         <td class="px-6 py-4">
-                            <p class="text-sm font-bold text-on-surface">Walk-in Customer</p>
-                            <p class="text-[11px] text-on-surface-variant md:hidden">12 Okt, 14:30</p>
+                            <p class="text-sm font-bold text-on-surface">{{ $trx->customer_name ?? 'Walk-in Customer' }}</p>
+                            <p class="text-[11px] text-on-surface-variant md:hidden">{{ $trx->created_at->format('d M, H:i') }}</p>
                         </td>
-                        <td class="px-6 py-4 text-sm font-black text-on-surface text-right">$90.20</td>
+                        <td class="px-6 py-4 text-sm font-black text-on-surface text-right">${{ number_format($trx->total_amount, 2) }}</td>
                         <td class="px-6 py-4 text-center">
+                            @if($trx->status === 'completed')
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
                                 Selesai
                             </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                                <span class="material-symbols-outlined text-lg text-slate-500">receipt_long</span>
-                            </button>
-                        </td>
-                    </tr>
-                    
-                    <!-- Tx 2 -->
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="px-6 py-4 text-sm font-semibold text-primary">#TRX-0041</td>
-                        <td class="px-6 py-4 text-sm text-on-surface-variant hidden md:table-cell">12 Okt 2023, 13:15</td>
-                        <td class="px-6 py-4">
-                            <p class="text-sm font-bold text-on-surface">Ahmad Budi</p>
-                            <p class="text-[11px] text-on-surface-variant md:hidden">12 Okt, 13:15</p>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-black text-on-surface text-right">$25.00</td>
-                        <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
-                                Selesai
+                            @elseif($trx->status === 'pending')
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                Tertunda
                             </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                                <span class="material-symbols-outlined text-lg text-slate-500">receipt_long</span>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Tx 3 (Refund) -->
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="px-6 py-4 text-sm font-semibold text-primary">#TRX-0040</td>
-                        <td class="px-6 py-4 text-sm text-on-surface-variant hidden md:table-cell">12 Okt 2023, 11:00</td>
-                        <td class="px-6 py-4">
-                            <p class="text-sm font-bold text-on-surface">Joko Susilo</p>
-                            <p class="text-[11px] text-on-surface-variant md:hidden">12 Okt, 11:00</p>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-black text-on-surface text-right">$45.00</td>
-                        <td class="px-6 py-4 text-center">
+                            @else
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">
                                 Dikembalikan
                             </span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 text-right">
                             <button class="p-2 hover:bg-slate-200 rounded-full transition-colors">
@@ -104,17 +72,17 @@
                             </button>
                         </td>
                     </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-on-surface-variant text-sm">Tidak ada riwayat transaksi.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
         
-        <!-- Pagination -->
-        <div class="p-4 border-t border-surface-container flex items-center justify-between">
-            <p class="text-xs text-on-surface-variant hidden sm:block">Menampilkan 1 hingga 3 dari 124 riwayat</p>
-            <div class="flex gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                <button class="px-3 py-1.5 border border-outline-variant/20 rounded-md hover:bg-surface-container transition-colors disabled:opacity-30 text-sm font-medium" disabled>Sebelumnya</button>
-                <button class="px-3 py-1.5 border border-outline-variant/20 rounded-md hover:bg-surface-container transition-colors text-sm font-medium">Selanjutnya</button>
-            </div>
+        <div class="p-4 border-t border-surface-container mt-4">
+            {{ $transactions->links() }}
         </div>
     </div>
 </div>

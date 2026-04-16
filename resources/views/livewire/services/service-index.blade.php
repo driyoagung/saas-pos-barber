@@ -14,14 +14,15 @@
         <div class="p-4 md:p-6 border-b border-surface-container flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="relative w-full md:w-64">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                <input type="text" class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Cari katalog...">
+                <input wire:model.live.debounce.300ms="search" type="text" class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Cari katalog...">
             </div>
             
             <div class="flex gap-2 w-full md:w-auto">
-                <select class="bg-surface-container-low border-none text-sm rounded-lg py-2 pl-4 pr-10 focus:ring-2 focus:ring-primary w-full md:w-auto outline-none">
-                    <option>Semua Kategori</option>
-                    <option>Haircut</option>
-                    <option>Produk</option>
+                <select wire:model.live="categoryId" class="bg-surface-container-low border-none text-sm rounded-lg py-2 pl-4 pr-10 focus:ring-2 focus:ring-primary w-full md:w-auto outline-none">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>
@@ -37,67 +38,43 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-container">
+                    @forelse($items as $item)
                     <tr class="hover:bg-surface-container-low transition-colors">
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-blue-50 text-primary flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined">content_cut</span>
+                                <div class="w-10 h-10 rounded-lg {{ $item->type === 'service' ? 'bg-blue-50 text-primary' : 'bg-orange-50 text-orange-600' }} flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined">{{ $item->type === 'service' ? 'content_cut' : 'inventory_2' }}</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-on-surface">Premium Haircut</p>
-                                    <p class="text-[11px] text-on-surface-variant md:hidden">Haircut</p>
+                                    <p class="text-sm font-bold text-on-surface">{{ $item->name }}</p>
+                                    <p class="text-[11px] text-on-surface-variant md:hidden">{{ $item->category->name }}</p>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-on-surface-variant hidden md:table-cell">
-                            <span class="bg-slate-100 px-2 py-1 rounded-md text-slate-600 text-xs font-semibold">Haircut</span>
+                            <span class="bg-slate-100 px-2 py-1 rounded-md text-slate-600 text-xs font-semibold">{{ $item->category->name }}</span>
                         </td>
-                        <td class="px-6 py-4 text-sm font-black text-on-surface">$45.00</td>
+                        <td class="px-6 py-4 text-sm font-black text-on-surface">${{ number_format($item->price, 2) }}</td>
                         <td class="px-6 py-4 text-right">
                             <button class="p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors">
                                 <span class="material-symbols-outlined text-lg">edit</span>
                             </button>
-                            <button class="p-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">
+                            <button wire:click="deleteItem({{ $item->id }})" wire:confirm="Are you sure you want to delete this item?" class="p-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
                         </td>
                     </tr>
-                    <tr class="hover:bg-surface-container-low transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined">inventory_2</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold text-on-surface">Pomade Suavecito</p>
-                                    <p class="text-[11px] text-on-surface-variant md:hidden">Produk</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-on-surface-variant hidden md:table-cell">
-                            <span class="bg-orange-100 px-2 py-1 rounded-md text-orange-700 text-xs font-semibold">Produk</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-black text-on-surface">$18.50</td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-lg">edit</span>
-                            </button>
-                            <button class="p-2 hover:bg-rose-50 text-rose-600 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-lg">delete</span>
-                            </button>
-                        </td>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-on-surface-variant text-sm">Tidak ada layanan atau produk yang ditemukan.</td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
         
-        <!-- Pagination Mockup -->
-        <div class="p-4 border-t border-surface-container flex items-center justify-between">
-            <p class="text-xs text-on-surface-variant hidden sm:block">Menampilkan 1 hingga 2 dari 24 item</p>
-            <div class="flex gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                <button class="px-3 py-1.5 border border-outline-variant/20 rounded-md hover:bg-surface-container transition-colors disabled:opacity-30 text-sm font-medium" disabled>Sebelumnya</button>
-                <button class="px-3 py-1.5 border border-outline-variant/20 rounded-md hover:bg-surface-container transition-colors text-sm font-medium">Selanjutnya</button>
-            </div>
+        <div class="p-4 border-t border-surface-container mt-4">
+            {{ $items->links() }}
         </div>
     </div>
 </div>
