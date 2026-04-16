@@ -6,7 +6,7 @@
         </div>
         <div class="relative w-full max-w-xs hidden sm:block">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-            <input type="text" class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Cari layanan...">
+            <input wire:model.live.debounce.300ms="search" type="text" class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Cari layanan...">
         </div>
     </div>
 
@@ -15,99 +15,63 @@
         <div class="lg:col-span-2 flex flex-col gap-6">
             <!-- Categories / Filter -->
             <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
-                <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold shrink-0">Semua</button>
-                <button class="px-4 py-2 bg-surface-container-low text-on-surface-variant hover:bg-surface-container rounded-lg text-sm font-semibold shrink-0 transition-colors">Haircut</button>
-                <button class="px-4 py-2 bg-surface-container-low text-on-surface-variant hover:bg-surface-container rounded-lg text-sm font-semibold shrink-0 transition-colors">Hair Care</button>
-                <button class="px-4 py-2 bg-surface-container-low text-on-surface-variant hover:bg-surface-container rounded-lg text-sm font-semibold shrink-0 transition-colors">Produk/Pomade</button>
+                <button wire:click="$set('categoryId', null)" class="px-4 py-2 {{ is_null($categoryId) ? 'bg-primary text-white' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container' }} rounded-lg text-sm font-semibold shrink-0 transition-colors">Semua</button>
+                @foreach($categories as $cat)
+                <button wire:click="selectCategory({{ $cat->id }})" class="px-4 py-2 {{ $categoryId === $cat->id ? 'bg-primary text-white' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container' }} rounded-lg text-sm font-semibold shrink-0 transition-colors">{{ $cat->name }}</button>
+                @endforeach
             </div>
 
             <!-- Items Grid -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Item 1 -->
-                <button class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 hover:border-primary/50 hover:shadow-md transition-all text-left group flex flex-col justify-between h-32 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-blue-100 transition-colors"></div>
-                    <div>
-                        <span class="material-symbols-outlined text-primary mb-2">content_cut</span>
-                        <h4 class="font-bold text-on-surface text-sm leading-tight">Premium Haircut</h4>
+                @forelse($items as $item)
+                <button wire:click="addToCart({{ $item->id }})" class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 hover:border-primary/50 hover:shadow-md transition-all text-left group flex flex-col justify-between h-32 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 {{ $item->type === 'service' ? 'bg-blue-50' : 'bg-orange-50' }} rounded-full blur-xl -mr-8 -mt-8 group-hover:{{ $item->type === 'service' ? 'bg-blue-100' : 'bg-orange-100' }} transition-colors"></div>
+                    <div class="relative z-10">
+                        <span class="material-symbols-outlined {{ $item->type === 'service' ? 'text-primary' : 'text-orange-600' }} mb-2">{{ $item->type === 'service' ? 'content_cut' : 'inventory_2' }}</span>
+                        <h4 class="font-bold text-on-surface text-sm leading-tight">{{ $item->name }}</h4>
                     </div>
-                    <p class="font-black text-primary">$45.00</p>
+                    <p class="font-black text-on-surface relative z-10">${{ number_format($item->price, 2) }}</p>
                 </button>
-                
-                <!-- Item 2 -->
-                <button class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 hover:border-primary/50 hover:shadow-md transition-all text-left group flex flex-col justify-between h-32 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-slate-50 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-slate-100 transition-colors"></div>
-                    <div>
-                        <span class="material-symbols-outlined text-secondary mb-2">face</span>
-                        <h4 class="font-bold text-on-surface text-sm leading-tight">Basic Haircut</h4>
-                    </div>
-                    <p class="font-black text-on-surface">$25.00</p>
-                </button>
-
-                <!-- Item 3 -->
-                <button class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 hover:border-primary/50 hover:shadow-md transition-all text-left group flex flex-col justify-between h-32 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-slate-50 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-slate-100 transition-colors"></div>
-                    <div>
-                        <span class="material-symbols-outlined text-secondary mb-2">dry_cleaning</span>
-                        <h4 class="font-bold text-on-surface text-sm leading-tight">Hot Towel Shave</h4>
-                    </div>
-                    <p class="font-black text-on-surface">$20.00</p>
-                </button>
-
-                <!-- Item 4 -->
-                <button class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 hover:border-primary/50 hover:shadow-md transition-all text-left group flex flex-col justify-between h-32 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-slate-50 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-slate-100 transition-colors"></div>
-                    <div>
-                        <span class="material-symbols-outlined text-emerald-600 mb-2">water_drop</span>
-                        <h4 class="font-bold text-on-surface text-sm leading-tight">Creambath / Hair Spa</h4>
-                    </div>
-                    <p class="font-black text-on-surface">$35.00</p>
-                </button>
-
-                <!-- Item 5 -->
-                <button class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 hover:border-primary/50 hover:shadow-md transition-all text-left group flex flex-col justify-between h-32 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-orange-50 rounded-full blur-xl -mr-8 -mt-8 group-hover:bg-orange-100 transition-colors"></div>
-                    <div>
-                        <span class="material-symbols-outlined text-orange-600 mb-2">inventory_2</span>
-                        <h4 class="font-bold text-on-surface text-sm leading-tight">Pomade Suavecito</h4>
-                    </div>
-                    <p class="font-black text-on-surface">$18.50</p>
-                </button>
+                @empty
+                <div class="col-span-2 md:col-span-3 text-center py-12 text-on-surface-variant text-sm">Layanan/Produk tidak ditemukan.</div>
+                @endforelse
             </div>
         </div>
 
         <!-- Cart Section -->
         <div class="lg:col-span-1">
             <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] sticky top-24">
-                <div class="p-4 border-b border-surface-container flex items-center justify-between">
-                    <h3 class="font-bold text-on-surface">Order Detail</h3>
-                    <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-md">Order #0042</span>
+                <div class="p-4 border-b border-surface-container flex flex-col gap-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-on-surface">Detail Order</h3>
+                        <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-md">Cart</span>
+                    </div>
+                    
+                    @if (session()->has('message'))
+                        <div class="text-xs text-emerald-700 bg-emerald-100 p-2 rounded-md font-bold">
+                            {{ session('message') }}
+                        </div>
+                    @endif
+
+                    <input type="text" wire:model="customerName" placeholder="Nama Pelanggan (opsional)" class="w-full text-sm bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary py-2 px-3 outline-none">
                 </div>
                 
                 <!-- Cart Items -->
                 <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                    <!-- Cart Item 1 -->
-                    <div class="flex items-center justify-between gap-2">
+                    @forelse($cart as $index => $c)
+                    <div class="flex items-center justify-between gap-2 border-b border-surface-container pb-2 last:border-0 last:pb-0">
                         <div class="flex-1">
-                            <h4 class="font-bold text-sm text-on-surface">Premium Haircut</h4>
-                            <p class="text-[11px] text-on-surface-variant">$45.00 x 1</p>
+                            <h4 class="font-bold text-sm text-on-surface">{{ $c['name'] }}</h4>
+                            <p class="text-[11px] text-on-surface-variant">${{ number_format($c['price'], 2) }} x <input type="number" wire:model.live.debounce.500ms="cart.{{ $index }}.qty" class="w-12 text-center p-0 h-5 text-xs bg-surface-container-low border border-outline-variant/30 rounded" min="1"></p>
                         </div>
-                        <div class="font-black text-sm text-on-surface">$45.00</div>
-                        <button class="p-1 text-slate-400 hover:text-error transition-colors rounded">
+                        <div class="font-black text-sm text-on-surface">${{ number_format($c['price'] * $c['qty'], 2) }}</div>
+                        <button wire:click="removeFromCart({{ $index }})" class="p-1 text-slate-400 hover:text-rose-500 transition-colors rounded">
                             <span class="material-symbols-outlined text-lg">delete</span>
                         </button>
                     </div>
-
-                    <!-- Cart Item 2 -->
-                    <div class="flex items-center justify-between gap-2">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-on-surface">Pomade Suavecito</h4>
-                            <p class="text-[11px] text-on-surface-variant">$18.50 x 2</p>
-                        </div>
-                        <div class="font-black text-sm text-on-surface">$37.00</div>
-                        <button class="p-1 text-slate-400 hover:text-error transition-colors rounded">
-                            <span class="material-symbols-outlined text-lg">delete</span>
-                        </button>
-                    </div>
+                    @empty
+                    <div class="text-center text-on-surface-variant text-sm py-4">Keranjang kosong. Pilih layanan di samping.</div>
+                    @endforelse
                 </div>
 
                 <!-- Totals & Checkout -->
@@ -115,19 +79,19 @@
                     <div class="space-y-2 mb-4 text-sm">
                         <div class="flex justify-between text-on-surface-variant">
                             <span>Subtotal</span>
-                            <span class="font-bold">$82.00</span>
+                            <span class="font-bold">${{ number_format($subtotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-on-surface-variant">
                             <span>Tax (10%)</span>
-                            <span class="font-bold">$8.20</span>
+                            <span class="font-bold">${{ number_format($tax, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-on-surface text-lg mt-2 pt-2 border-t border-outline-variant/20 font-black">
                             <span>Total</span>
-                            <span class="text-primary">$90.20</span>
+                            <span class="text-primary">${{ number_format($total, 2) }}</span>
                         </div>
                     </div>
                     
-                    <button class="w-full bg-primary-gradient text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                    <button wire:click="checkout" @if(empty($cart)) disabled @endif class="w-full h-12 {{ empty($cart) ? 'bg-slate-300' : 'bg-primary-gradient hover:scale-[1.02] active:scale-95 shadow-lg shadow-primary/30' }} text-white font-bold rounded-xl transition-all text-sm flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">payments</span>
                         Process Payment
                     </button>
