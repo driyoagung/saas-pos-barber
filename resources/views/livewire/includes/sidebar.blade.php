@@ -11,17 +11,21 @@
             </div>
         </div>
         <nav class="flex-1 space-y-2 px-2">
-            <a class="flex items-center gap-3 px-4 py-3 text-white font-semibold transition-all duration-200 bg-primary-gradient rounded-xl shadow-lg shadow-primary/30 active:scale-95" href="#">
-                <span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-                <span>General</span>
+            <a wire:navigate class="flex items-center gap-3 px-4 py-3 transition-all duration-200 rounded-xl active:scale-95 {{ request()->routeIs('dashboard') ? 'text-white font-semibold bg-primary-gradient shadow-lg shadow-primary/30' : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}" href="{{ route('dashboard') }}">
+                <span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' {{ request()->routeIs('dashboard') ? 1 : 0 }};">dashboard</span>
+                <span>Dashboard</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-95" href="#">
-                <span class="material-symbols-outlined" data-icon="groups">groups</span>
-                <span>Management</span>
+            <a wire:navigate class="flex items-center gap-3 px-4 py-3 transition-all duration-200 rounded-xl active:scale-95 {{ request()->routeIs('pos') ? 'text-white font-semibold bg-primary-gradient shadow-lg shadow-primary/30' : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}" href="{{ route('pos') }}">
+                <span class="material-symbols-outlined" data-icon="point_of_sale" style="font-variation-settings: 'FILL' {{ request()->routeIs('pos') ? 1 : 0 }};">point_of_sale</span>
+                <span>POS Kasir</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-95" href="#">
-                <span class="material-symbols-outlined" data-icon="settings">settings</span>
-                <span>Settings</span>
+            <a wire:navigate class="flex items-center gap-3 px-4 py-3 transition-all duration-200 rounded-xl active:scale-95 {{ request()->routeIs('services') ? 'text-white font-semibold bg-primary-gradient shadow-lg shadow-primary/30' : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}" href="{{ route('services') }}">
+                <span class="material-symbols-outlined" data-icon="inventory_2" style="font-variation-settings: 'FILL' {{ request()->routeIs('services') ? 1 : 0 }};">inventory_2</span>
+                <span>Layanan & Produk</span>
+            </a>
+            <a wire:navigate class="flex items-center gap-3 px-4 py-3 transition-all duration-200 rounded-xl active:scale-95 {{ request()->routeIs('transactions') ? 'text-white font-semibold bg-primary-gradient shadow-lg shadow-primary/30' : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}" href="{{ route('transactions') }}">
+                <span class="material-symbols-outlined" data-icon="receipt_long" style="font-variation-settings: 'FILL' {{ request()->routeIs('transactions') ? 1 : 0 }};">receipt_long</span>
+                <span>Riwayat Transaksi</span>
             </a>
         </nav>
         <div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800">
